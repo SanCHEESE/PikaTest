@@ -8,21 +8,27 @@
 
 import Foundation
 
-
+/// A protocol for backend endpoint
 protocol EndpointProtocol {
 	var base: String { get }
 	var path: String { get }
 }
 
 extension EndpointProtocol {
-	var urlComponents: URLComponents {
-		var components = URLComponents(string: base)!
+
+	/// An accessor for url components
+	var urlComponents: URLComponents? {
+		guard var components = URLComponents(string: base) else {
+			return nil
+		}
 		components.path = "/files/api201910" + path
 		return components
 	}
 
-	var request: URLRequest {
-		let url = urlComponents.url!
+	var request: URLRequest? {
+		guard let url = urlComponents?.url else {
+			return nil
+		}
 		return URLRequest(url: url)
 	}
 }

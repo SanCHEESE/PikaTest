@@ -8,6 +8,7 @@
 
 import UIKit
 
+/// View Controller that shows post data
 final class PostViewController: UITableViewController, ViewProtocol {
 	
 	var viewModel: PostViewModelProtocol? {
@@ -23,15 +24,15 @@ final class PostViewController: UITableViewController, ViewProtocol {
 		tableView.estimatedRowHeight = 44
 
 		viewModel?.fetchPost { [weak self] result in
-			guard let `self` = self else {
+			guard let self = self else {
 				return
 			}
 			
 			switch result {
 			case .success:
 				self.reloadData()
-			case .failure(let error):
-				self.viewModel?.handleError(error: error)
+			case .failure(_):
+				break // do nothing
 			}
 		}
 	}
@@ -44,7 +45,7 @@ final class PostViewController: UITableViewController, ViewProtocol {
 
 // MARK: - TableView -
 
-extension PostViewController { // TODO: Переместить во вью модел
+extension PostViewController { // TODO: Move to View Model
 	override func numberOfSections(in tableView: UITableView) -> Int {
 		return 1
 	}

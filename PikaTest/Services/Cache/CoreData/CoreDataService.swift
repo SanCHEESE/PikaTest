@@ -10,7 +10,17 @@ import Foundation
 import CoreData
 import UIKit
 
+/// A protocol for stubbing data service
+protocol CoreDataServiceProtocol {
 
+	/// CoreData persistent container
+	var persistentContainer: NSPersistentContainer { get }
+
+	/// Context for container
+	var managedContext: NSManagedObjectContext { get }
+}
+
+/// Concrete CoreData Caching service
 final class CoreDataService: CoreDataServiceProtocol {
 
 	private(set) lazy var persistentContainer: NSPersistentContainer = {
@@ -28,36 +38,23 @@ final class CoreDataService: CoreDataServiceProtocol {
 	}()
 }
 
-// MARK: - CacheServiceProtocol
+// MARK: - Caching
 
-extension CoreDataService: CacheServiceProtocol {
+extension CoreDataService: Caching {
 
-	func getPost(with id: Int64) -> PostEntity? {
+	func getPost(with id: Int64) throws -> PostEntity? {
 		let request: NSFetchRequest<Post> = Post.fetchRequest()
-
 		request.predicate = NSPredicate(format: "id = %@", id)
 
-		do {
-			let post = try managedContext.fetch(request).first
-			return post
-		} catch {
-			print(error)
-			return nil
-		}
+		let post = try managedContext.fetch(request).first
+		return post
 	}
 
-	func getPosts(with sortDescriptor: NSSortDescriptor) -> [PostEntity] {
+	func getPosts(with sortDescriptor: NSSortDescriptor) throws -> [PostEntity] {
 		let request: NSFetchRequest<Post> = Post.fetchRequest()
-
 		request.sortDescriptors = [sortDescriptor]
-
-		do {
-			let posts = try managedContext.fetch(request)
-			return posts
-		} catch {
-			print(error)
-			return []
-		}
+		
+		let posts = try managedContext.fetch(request)
+		return posts
 	}
-
 }

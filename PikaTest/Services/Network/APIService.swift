@@ -20,15 +20,25 @@ final class APIService: APIServiceProtocol {
 	}
 
 	func getFeed(from endpoint: FeedEndpoint, completion: @escaping (Result<FeedResult?, APIError>) -> Void) {
-		fetch(with: endpoint.request , decode: { json -> FeedResult? in
-			guard let feedResult = json as? FeedResult else { return  nil }
+		guard let request = endpoint.request else {
+			completion(.failure(.badUrl))
+			return
+		}
+
+		fetch(with: request, decode: { json -> FeedResult? in
+			guard let feedResult = json as? FeedResult else { return nil }
 			return feedResult
 		}, completion: completion)
 	}
 
 	func getPost(from endpoint: PostEndpoint, completion: @escaping (Result<PostResult?, APIError>) -> Void) {
-		fetch(with: endpoint.request , decode: { json -> PostResult? in
-			guard let postResult = json as? PostResult else { return  nil }
+		guard let request = endpoint.request else {
+			completion(.failure(.badUrl))
+			return
+		}
+
+		fetch(with: request, decode: { json -> PostResult? in
+			guard let postResult = json as? PostResult else { return nil }
 			return postResult
 		}, completion: completion)
 	}

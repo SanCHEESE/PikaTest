@@ -10,18 +10,19 @@ import UIKit
 
 
 protocol PostCoordinatorProtocol: CoordinatorProtocol {
+
 }
 
-
 final class PostCoordinator: PostCoordinatorProtocol {
+
 	var navigationController: UINavigationController
 	
 	required init(navigationController: UINavigationController) {
 		self.navigationController = navigationController
 	}
 	
-	func start(with object: PostEntity?) {
-		guard let post = object else {
+	func start(with object: Any?) {
+		guard let post = object as? PostEntity else {
 			return
 		}
 

@@ -13,14 +13,14 @@ import UIKit
 protocol FeedViewModelProtocol: ViewModelProtocol {
 
 	var apiService: APIServiceProtocol { get }
-	var cacheService: CacheServiceProtocol { get }
+	var cacheService: Caching { get }
 
 	var feedTableViewCellModels: [FeedTableViewCellViewModelProtocol]? { get }
 	var onUpdate: (() -> ())? { set get }
 
-	init(coordinator: FeedCoordinatorProtocol, apiService: APIServiceProtocol, cacheService: CacheServiceProtocol)
+	init(coordinator: FeedCoordinatorProtocol, apiService: APIServiceProtocol, cacheService: Caching)
 
-	func fetchFeed(completion: @escaping ViewModelCompletion)
+	func fetchFeed(completion: @escaping (Result<Void, Error>)->())
 	func changeSortingMode()
 	func goToPost(at index: Int)
 }
@@ -33,9 +33,9 @@ final class FeedViewModel: FeedViewModelProtocol {
 
 	// MARK: - FeedViewModelProtocol -
 	let apiService: APIServiceProtocol
-	let cacheService: CacheServiceProtocol
+	let cacheService: Caching
 	var feedTableViewCellModels: [FeedTableViewCellViewModelProtocol]? {
-		return self.posts.map { post in
+		return posts.map { post in
 			FeedTableViewCellViewModel(titleText: post.title ?? "",
 									   previewText: post.previewText ?? "",
 									   rating: Int(post.likesCount))
@@ -45,21 +45,28 @@ final class FeedViewModel: FeedViewModelProtocol {
 
 	required init(coordinator: FeedCoordinatorProtocol,
 				  apiService: APIServiceProtocol = APIService(),
-				  cacheService: CacheServiceProtocol = CoreDataService())
+				  cacheService: Caching = CoreDataService())
 	{
 		self.coordinator = coordinator
 		self.apiService = apiService
 		self.cacheService = cacheService
 
-		self.posts = self.cacheService.getPosts(with: NSSortDescriptor(key: "id", ascending: true))
+		do {
+			self.posts = try self.cacheService.getPosts(with: SortBy.id.sortDescriptor)
+		} catch {
+			coordinator.presentErrorAlert(with: error)
+		}
+		
+		self.posts = []
 	}
 
-	func fetchFeed(completion: @escaping ViewModelCompletion) {
+	func fetchFeed(completion: @escaping (Result<Void, Error>)->()) {
 		apiService.getFeed(from: FeedEndpoint()) { [weak self] result in
 			DispatchQueue.main.async {
-				guard let `self` = self else {
+				guard let self = self else {
 					return
 				}
+
 				switch result {
 				case .success(let feedResult):
 					guard let posts = feedResult?.posts else {
@@ -67,9 +74,10 @@ final class FeedViewModel: FeedViewModelProtocol {
 					}
 					self.posts = posts
 
-					completion(.success(true))
+					completion(.success(()))
 				case .failure(let error):
 					completion(.failure(error))
+					self.handleError(error: error)
 				}
 			}
 		}
@@ -90,22 +98,13 @@ final class FeedViewModel: FeedViewModelProtocol {
 
 	private var sorting: SortBy = .id {
 		didSet {
-			sortPosts()
+			do {
+				self.posts = try cacheService.getPosts(with: self.sorting.sortDescriptor)
+			} catch {
+				coordinator.presentErrorAlert(with: error)
+			}
 		}
 	}
 
 	private var posts: [PostEntity]
-
-	private func sortPosts() {
-		posts.sort(by: { (obj1, obj2) -> Bool in
-			switch self.sorting {
-			case .id:
-				return obj1.id < obj2.id
-			case .date(let ordering):
-				return ordering == .ascending ? obj1.timeshamp < obj2.timeshamp : obj1.timeshamp > obj2.timeshamp
-			case .likes(let ordering):
-				return ordering == .descending ? obj1.likesCount < obj2.likesCount : obj1.likesCount > obj2.likesCount
-			}
-		})
-	}
 }

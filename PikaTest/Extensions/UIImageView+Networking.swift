@@ -10,7 +10,7 @@ import UIKit
 import Foundation
 
 
-/// "Тупой" класс загрузки картинки
+/// Dumb image loading stuff
 extension UIImageView {
 
 	func setImageFrom(urlString: String, completion: @escaping ()->() = {}) {

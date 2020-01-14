@@ -11,18 +11,22 @@ import Foundation
 import CoreData
 
 
+/// Post + CoreData
 extension Post {
-
+	
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Post> {
         return NSFetchRequest<Post>(entityName: "Post")
     }
+}
 
-    @NSManaged public var id: Int64
-    @NSManaged public var timeshamp: Double
-    @NSManaged public var title: String?
-    @NSManaged public var previewText: String?
-    @NSManaged public var likesCount: Int64
-    @NSManaged public var text: String?
-    @NSManaged public var imageUrls: [String]?
-	
+/// Post + PostEntity
+extension Post: PostEntity {
+
+	@NSManaged public var id: Int64
+	@NSManaged public var timeshamp: Double
+	@NSManaged public var title: String?
+	@NSManaged public var previewText: String?
+	@NSManaged public var likesCount: Int64
+	@NSManaged public var text: String?
+	@NSManaged public var imageUrls: [String]?
 }

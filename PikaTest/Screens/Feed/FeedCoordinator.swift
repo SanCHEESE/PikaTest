@@ -26,6 +26,10 @@ final class FeedCoordinator: NSObject, FeedCoordinatorProtocol {
 		self.navigationController = navigationController
 	}
 
+	func start(with object: Any?) {
+		
+	}
+
 	// MARK: - FeedCoordinatorProtocol - 
 	
 	func presentSwitchSortingActionSheet(completion: @escaping (_ sortBy: SortBy)->()) {

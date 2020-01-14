@@ -11,9 +11,7 @@ import CoreData
 
 
 protocol ViewModelProtocol {
-	
-	typealias ViewModelCompletion = (_ result: Result<Bool, Error>) -> ()
-	
+
 	var coordinator: CoordinatorProtocol { get }
 }
 

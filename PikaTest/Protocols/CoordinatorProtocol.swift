@@ -9,8 +9,8 @@
 import UIKit
 
 
-protocol CoordinatorProtocol: class {
-	
+protocol CoordinatorProtocol: AnyObject {
+
 	var navigationController: UINavigationController { get }
 	
 	init(navigationController: UINavigationController)
@@ -24,10 +24,8 @@ protocol CoordinatorProtocol: class {
 
 extension CoordinatorProtocol {
 	
-	func start(with object: Any?) {}
-	
 	func presentErrorAlert(with error: Error) {
-		let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+		let alertController = UIAlertController(title: "Error".localized, message: error.localizedDescription, preferredStyle: .alert)
 		alertController.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
 		self.navigationController.present(alertController, animated: true, completion: nil)
 	}

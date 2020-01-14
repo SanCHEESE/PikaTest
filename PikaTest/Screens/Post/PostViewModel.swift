@@ -9,28 +9,27 @@
 import Foundation
 
 protocol PostViewModelProtocol: ViewModelProtocol {
-
+	
 	var apiService: APIServiceProtocol { get }
-	var cacheService: CacheServiceProtocol { get }
+	var cacheService: Caching { get }
 	var post: PostEntity { get }
 
-	init(coordinator: PostCoordinatorProtocol, post: PostEntity, apiService: APIServiceProtocol, cacheService: CacheServiceProtocol)
+	init(coordinator: PostCoordinatorProtocol, post: PostEntity, apiService: APIServiceProtocol, cacheService: Caching)
 
 	var text: String? { get }
 	var imageUrls: [URL]? { get }
 
-	func fetchPost(completion: @escaping (_ success: Result<Bool, Error>) -> ())
+	func fetchPost(completion: @escaping (Result<Void, Error>) -> ())
 }
 
 
 final class PostViewModel: PostViewModelProtocol {
-	typealias Coordinator = CoordinatorProtocol
 
 	// MARK: - PostViewModelProtocol -
 	
-	let coordinator: CoordinatorProtocol
+	let coordinator: CoordinatorProtocol 
 	let apiService: APIServiceProtocol
-	let cacheService: CacheServiceProtocol
+	let cacheService: Caching
 	private(set) var post: PostEntity {
 		didSet {
 			text = post.text
@@ -43,7 +42,7 @@ final class PostViewModel: PostViewModelProtocol {
 	required init(coordinator: PostCoordinatorProtocol,
 				  post: PostEntity,
 				  apiService: APIServiceProtocol = APIService(),
-				  cacheService: CacheServiceProtocol = CoreDataService()) {
+				  cacheService: Caching = CoreDataService()) {
 		self.post = post
 		self.coordinator = coordinator
 		self.apiService = apiService
@@ -53,11 +52,11 @@ final class PostViewModel: PostViewModelProtocol {
 	private(set) var text: String?
 	private(set) var imageUrls: [URL]?
 
-	func fetchPost(completion: @escaping (_ success: Result<Bool, Error>) -> ()) {
+	func fetchPost(completion: @escaping (Result<Void, Error>) -> ()) {
 
 		apiService.getPost(from: PostEndpoint(postId: Int(post.id))) { [weak self] result in
 			DispatchQueue.main.async {
-				guard let `self` = self else {
+				guard let self = self else {
 					return
 				}
 
@@ -68,9 +67,10 @@ final class PostViewModel: PostViewModelProtocol {
 					}
 
 					self.post = post
-					completion(.success(true))
+					completion(.success(()))
 				case .failure(let error):
 					completion(.failure(error))
+					self.handleError(error: error)
 				}
 			}
 		}

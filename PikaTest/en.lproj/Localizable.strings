@@ -6,11 +6,20 @@
   Copyright © 2019 Александр Бочкарев. All rights reserved.
 */
 
-"Network unavailable" = "Network unavailable";
-"Cache broken" = "Cache broken";
-"Response invalid" = "Response invalid";
+// Network errors
+"Bad url" = "Bad url";
+"Request failed" = "Request failed";
+"Invalid data" = "Invalid data";
+"Response Unsuccessful" = "Response Unsuccessful";
+"JSON Conversion Failure" = "JSON Conversion Failure";
+"JSON Parsing Failure" = "JSON Parsing Failure";
 
+// UI
+"Error" = "Error";
 "Expand" = "Expand";
 "Collapse" = "Collapse";
 "Feed" = "Feed";
 "Sort" = "Sort";
+
+// Cache errors
+"Not found" = "Not found";

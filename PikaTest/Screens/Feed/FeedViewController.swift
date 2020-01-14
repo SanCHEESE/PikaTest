@@ -66,7 +66,7 @@ final class FeedViewController: UITableViewController, ViewProtocol {
 		
 		
 		viewModel.fetchFeed { [weak self] result in
-			guard let `self` = self else {
+			guard let self = self else {
 				return
 			}
 			
@@ -76,8 +76,8 @@ final class FeedViewController: UITableViewController, ViewProtocol {
 			switch result {
 			case .success:
 				self.reloadData()
-			case .failure(let error):
-				self.viewModel?.handleError(error: error)
+			case .failure(_):
+				break // do nothing
 			}
 			
 		}
@@ -90,7 +90,7 @@ final class FeedViewController: UITableViewController, ViewProtocol {
 
 
 // MARK: - TableView -
-extension FeedViewController { // TODO: Переместить во вью модел
+extension FeedViewController { // TODO: Move to view model
 	
 	override func numberOfSections(in tableView: UITableView) -> Int {
 		return 1

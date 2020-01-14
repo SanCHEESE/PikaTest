@@ -11,7 +11,7 @@ import Foundation
 import CoreData
 
 @objc(Post)
-public class Post: NSManagedObject, PostEntity {
+public class Post: NSManagedObject {
 
 	enum CodingKeys: String, CodingKey {
 		case id = "postId"
@@ -25,6 +25,7 @@ public class Post: NSManagedObject, PostEntity {
 
 	// MARK: - Decodable
 	public required convenience init(from decoder: Decoder) throws {
+		// TODO: single responsibility!!!
 		guard let codingUserInfoKeyManagedObjectContext = CodingUserInfoKey.managedObjectContext,
 			let managedObjectContext = decoder.userInfo[codingUserInfoKeyManagedObjectContext] as? NSManagedObjectContext,
 			let entity = NSEntityDescription.entity(forEntityName: "Post", in: managedObjectContext) else {

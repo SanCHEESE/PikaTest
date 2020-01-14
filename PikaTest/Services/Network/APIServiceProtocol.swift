@@ -8,7 +8,15 @@
 
 import Foundation
 
+/// API Errors
+/// - badUrl -
+/// - requestFailed -
+/// - jsonConversionFailure -
+/// - invalidData -
+/// - responseUnsuccessful -
+/// - jsonParsingFailure -
 enum APIError: LocalizedError, Error {
+	case badUrl
 	case requestFailed
 	case jsonConversionFailure
 	case invalidData
@@ -17,14 +25,17 @@ enum APIError: LocalizedError, Error {
 }
 
 extension APIError {
+
 	var localizedDescription: String {
 		switch self {
+		case .badUrl:
+			return "Bad url".localized
 		case .requestFailed:
 			return "Request Failed".localized
 		case .invalidData:
 			return "Invalid data".localized
 		case .responseUnsuccessful:
-			return "Response Unsiccessful".localized
+			return "Response Unsuccessful".localized
 		case .jsonConversionFailure:
 			return "JSON Conversion Failure".localized
 		case .jsonParsingFailure:
@@ -33,7 +44,7 @@ extension APIError {
 	}
 }
 
-protocol APIServiceProtocol: class {
+protocol APIServiceProtocol: AnyObject {
 	
 	var session: URLSession { get }
 	var decoder: DecoderProtocol { get }
@@ -49,7 +60,7 @@ extension APIServiceProtocol {
 
 	private func decodingTask<T: Decodable>(with request: URLRequest, decodingType: T.Type, completionHandler completion: @escaping JSONTaskCompletionHandler) -> URLSessionDataTask {
 
-		let task = session.dataTask(with: request) { [weak self] data, response, error in
+		let task = session.dataTask(with: request) { data, response, error in
 			guard let httpResponse = response as? HTTPURLResponse else {
 				completion(nil, .requestFailed)
 				return
@@ -57,7 +68,7 @@ extension APIServiceProtocol {
 			if 200..<300 ~= httpResponse.statusCode {
 				if let data = data {
 					do {
-						let genericModel = try self?.decoder.decode(decodingType, from: data)
+						let genericModel = try self.decoder.decode(decodingType, from: data)
 						completion(genericModel, nil)
 					} catch {
 						completion(nil, .jsonConversionFailure)
