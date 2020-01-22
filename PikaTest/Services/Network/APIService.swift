@@ -19,25 +19,25 @@ final class APIService: APIServiceProtocol {
 		self.decoder = decoder
 	}
 
-	func getFeed(from endpoint: FeedEndpoint, completion: @escaping (Result<FeedResult?, APIError>) -> Void) {
+	func getFeed(from endpoint: FeedEndpoint, completion: @escaping (Result<FeedResult, APIError>) -> Void) {
 		guard let request = endpoint.request else {
 			completion(.failure(.badUrl))
 			return
 		}
 
-		fetch(with: request, decode: { json -> FeedResult? in
+		fetch(with: request, decode: { (json: Decodable) -> FeedResult? in
 			guard let feedResult = json as? FeedResult else { return nil }
 			return feedResult
 		}, completion: completion)
 	}
 
-	func getPost(from endpoint: PostEndpoint, completion: @escaping (Result<PostResult?, APIError>) -> Void) {
+	func getPost(from endpoint: PostEndpoint, completion: @escaping (Result<PostResult, APIError>) -> Void) {
 		guard let request = endpoint.request else {
 			completion(.failure(.badUrl))
 			return
 		}
 
-		fetch(with: request, decode: { json -> PostResult? in
+		fetch(with: request, decode: { (json: Decodable) -> PostResult? in
 			guard let postResult = json as? PostResult else { return nil }
 			return postResult
 		}, completion: completion)

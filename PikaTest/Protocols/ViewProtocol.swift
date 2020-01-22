@@ -8,8 +8,10 @@
 
 import Foundation
 
+/// A view protocol that sets up basic entity constraints
 protocol ViewProtocol: AnyObject {
 	associatedtype ViewModel = ViewModelProtocol
-	
+
+	/// View model to be set externally
 	var viewModel: ViewModel? { set get }
 }

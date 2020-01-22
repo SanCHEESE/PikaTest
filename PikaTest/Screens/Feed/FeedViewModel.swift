@@ -7,8 +7,6 @@
 //
 
 import Foundation
-import UIKit
-
 
 protocol FeedViewModelProtocol: ViewModelProtocol {
 
@@ -69,7 +67,7 @@ final class FeedViewModel: FeedViewModelProtocol {
 
 				switch result {
 				case .success(let feedResult):
-					guard let posts = feedResult?.posts else {
+					guard let posts = feedResult.posts else {
 						return
 					}
 					self.posts = posts

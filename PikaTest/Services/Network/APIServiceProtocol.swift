@@ -45,20 +45,20 @@ extension APIError {
 }
 
 protocol APIServiceProtocol: AnyObject {
-	
+
 	var session: URLSession { get }
 	var decoder: DecoderProtocol { get }
 
-	func fetch<T: Decodable>(with request: URLRequest, decode: @escaping (Decodable) -> T?, completion: @escaping (Result<T, APIError>) -> Void)
+	func fetch<T: Storable>(with request: URLRequest, decode: @escaping (Decodable) -> T?, completion: @escaping (Result<T, APIError>) -> Void)
 
-	func getFeed(from endpoint: FeedEndpoint, completion: @escaping (Result<FeedResult?, APIError>) -> Void)
-	func getPost(from endpoint: PostEndpoint, completion: @escaping (Result<PostResult?, APIError>) -> Void)
+	func getFeed(from endpoint: FeedEndpoint, completion: @escaping (Result<FeedResult, APIError>) -> Void)
+	func getPost(from endpoint: PostEndpoint, completion: @escaping (Result<PostResult, APIError>) -> Void)
 }
 
 extension APIServiceProtocol {
 	typealias JSONTaskCompletionHandler = (Decodable?, APIError?) -> Void
 
-	private func decodingTask<T: Decodable>(with request: URLRequest, decodingType: T.Type, completionHandler completion: @escaping JSONTaskCompletionHandler) -> URLSessionDataTask {
+	private func decodingTask<T: Storable>(with request: URLRequest, decodingType: T.Type, completionHandler completion: @escaping JSONTaskCompletionHandler) -> URLSessionDataTask {
 
 		let task = session.dataTask(with: request) { data, response, error in
 			guard let httpResponse = response as? HTTPURLResponse else {
@@ -83,7 +83,7 @@ extension APIServiceProtocol {
 		return task
 	}
 
-	func fetch<T: Decodable>(with request: URLRequest, decode: @escaping (Decodable) -> T?, completion: @escaping (Result<T, APIError>) -> Void) {
+	func fetch<T: Storable>(with request: URLRequest, decode: @escaping (Decodable) -> T?, completion: @escaping (Result<T, APIError>) -> Void) {
 
 		let task = decodingTask(with: request, decodingType: T.self) { (json , error) in
 			DispatchQueue.global().async {

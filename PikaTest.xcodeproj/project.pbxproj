@@ -186,20 +186,6 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
-		53A079302398D17400931D25 /* Protocols */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Protocols;
-			sourceTree = "<group>";
-		};
-		53A0793A2398E9D000931D25 /* Protocols */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Protocols;
-			sourceTree = "<group>";
-		};
 		53CE7944237AA0FA00BB9651 = {
 			isa = PBXGroup;
 			children = (
@@ -274,7 +260,6 @@
 		53CE798C237AB92500BB9651 /* Feed */ = {
 			isa = PBXGroup;
 			children = (
-				53A079302398D17400931D25 /* Protocols */,
 				53CE7995237AB98400BB9651 /* Cells */,
 				53CE7954237AA0FA00BB9651 /* FeedViewController.swift */,
 				53CE798E237AB94300BB9651 /* FeedViewModel.swift */,
@@ -295,7 +280,6 @@
 		53CE7992237AB95B00BB9651 /* Post */ = {
 			isa = PBXGroup;
 			children = (
-				53A0793A2398E9D000931D25 /* Protocols */,
 				533A55C9238077EA0074978C /* Cells */,
 				53CE7993237AB97B00BB9651 /* PostViewController.swift */,
 				53572120237AC79100620445 /* PostViewModel.swift */,

@@ -25,14 +25,8 @@ public class Post: NSManagedObject {
 
 	// MARK: - Decodable
 	public required convenience init(from decoder: Decoder) throws {
-		// TODO: single responsibility!!!
-		guard let codingUserInfoKeyManagedObjectContext = CodingUserInfoKey.managedObjectContext,
-			let managedObjectContext = decoder.userInfo[codingUserInfoKeyManagedObjectContext] as? NSManagedObjectContext,
-			let entity = NSEntityDescription.entity(forEntityName: "Post", in: managedObjectContext) else {
-				fatalError("Failed to decode Post")
-		}
 
-		self.init(entity: entity, insertInto: managedObjectContext)
+		self.init(entity: Self.entity(), insertInto: nil)
 
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 		self.id = try container.decodeIfPresent(Int64.self, forKey: .id) ?? -1
@@ -42,8 +36,6 @@ public class Post: NSManagedObject {
 		self.text = try container.decodeIfPresent(String.self, forKey: .text)
 		self.likesCount = try container.decodeIfPresent(Int64.self, forKey: .likesCount) ?? 0
 		self.imageUrls = try container.decodeIfPresent([String].self, forKey: .imageUrls)
-
-		try managedObjectContext.save()
 	}
 
 	// MARK: - Encodable

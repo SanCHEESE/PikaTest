@@ -9,10 +9,13 @@
 import UIKit
 import Foundation
 
-
 /// Dumb image loading stuff
 extension UIImageView {
 
+	/// Load image from url string
+	/// - Parameters:
+	///   - urlString: url string
+	///   - completion: callback closure
 	func setImageFrom(urlString: String, completion: @escaping ()->() = {}) {
 
 		guard let url = URL(string: urlString) else {
@@ -23,6 +26,10 @@ extension UIImageView {
 		self.setImageFrom(url: url)
 	}
 
+	/// Load image from ulr
+	/// - Parameters:
+	///   - url: url
+	///   - completion: callback closure
 	func setImageFrom(url: URL, completion: @escaping ()->() = {}) {
 
 		// check in cache
@@ -57,7 +64,6 @@ extension UIImageView {
 			}
 		}
 	}
-
 
 	// MARK: - Private -
 

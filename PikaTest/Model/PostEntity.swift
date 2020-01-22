@@ -10,6 +10,7 @@ import Foundation
 
 /// Sort field of Post entities
 enum SortBy {
+
 	case id
 	case date(Order)
 	case likes(Order)
@@ -43,5 +44,4 @@ protocol PostEntity: Codable {
 	var likesCount: Int64 { set get }
 	var text: String? { set get }
 	var imageUrls: [String]? { set get }
-	
 }

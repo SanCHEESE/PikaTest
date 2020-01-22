@@ -23,14 +23,23 @@ protocol CoreDataServiceProtocol {
 /// Concrete CoreData Caching service
 final class CoreDataService: CoreDataServiceProtocol {
 
+	private static var _persistentContainer: NSPersistentContainer?
+
 	private(set) lazy var persistentContainer: NSPersistentContainer = {
-		let container = NSPersistentContainer(name: "PikaTest")
-		container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+		if let container = Self._persistentContainer {
+			return container
+		}
+
+		Self._persistentContainer = NSPersistentContainer(name: "PikaTest")
+		guard let newContainer = Self._persistentContainer else {
+			fatalError("No container")
+		}
+		newContainer.loadPersistentStores(completionHandler: { (storeDescription, error) in
 			if let error = error as NSError? {
 				fatalError("Unresolved error \(error), \(error.userInfo)")
 			}
 		})
-		return container
+		return newContainer
 	}()
 
 	private(set) lazy var managedContext: NSManagedObjectContext = {
@@ -41,6 +50,29 @@ final class CoreDataService: CoreDataServiceProtocol {
 // MARK: - Caching
 
 extension CoreDataService: Caching {
+
+	func clear() throws {
+		let fetchRequest: NSFetchRequest<NSFetchRequestResult> = Post.fetchRequest()
+		let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+		try managedContext.execute(deleteRequest)
+	}
+
+	func write(object: PostEntity) throws {
+		guard let post = object as? Post else {
+			throw CachingError.writeError
+		}
+
+		// delete
+		let fetchRequest = NSFetchRequest<Post>(entityName: String(describing: Post.self))
+		let results = try managedContext.fetch(fetchRequest)
+		results.forEach {
+			managedContext.delete($0)
+		}
+
+		// insert
+		managedContext.insert(post)
+		try managedContext.save()
+	}
 
 	func getPost(with id: Int64) throws -> PostEntity? {
 		let request: NSFetchRequest<Post> = Post.fetchRequest()

@@ -22,7 +22,6 @@ protocol PostViewModelProtocol: ViewModelProtocol {
 	func fetchPost(completion: @escaping (Result<Void, Error>) -> ())
 }
 
-
 final class PostViewModel: PostViewModelProtocol {
 
 	// MARK: - PostViewModelProtocol -
@@ -62,7 +61,7 @@ final class PostViewModel: PostViewModelProtocol {
 
 				switch result {
 				case .success(let postResult):
-					guard let post = postResult?.post else {
+					guard let post = postResult.post else {
 						return
 					}
 
