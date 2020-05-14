@@ -57,22 +57,33 @@ extension CoreDataService: Caching {
 		try managedContext.execute(deleteRequest)
 	}
 
-	func write(object: PostEntity) throws {
+	func write(object: PostEntity) throws { // TODO: Generic?
 		guard let post = object as? Post else {
 			throw CachingError.writeError
-		}
-
-		// delete
-		let fetchRequest = NSFetchRequest<Post>(entityName: String(describing: Post.self))
-		let results = try managedContext.fetch(fetchRequest)
-		results.forEach {
-			managedContext.delete($0)
 		}
 
 		// insert
 		managedContext.insert(post)
 		try managedContext.save()
 	}
+
+    func update(object: PostEntity) throws {
+        guard let post = object as? Post  else {
+            throw CachingError.updateError
+        }
+
+        // delete old
+        let fetchRequest: NSFetchRequest<Post> = Post.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id = %d", post.id)
+        let results = try managedContext.fetch(fetchRequest)
+        results.forEach {
+            managedContext.delete($0)
+        }
+
+        // insert
+        managedContext.insert(post)
+        try managedContext.save()
+    }
 
 	func getPost(with id: Int64) throws -> PostEntity? {
 		let request: NSFetchRequest<Post> = Post.fetchRequest()

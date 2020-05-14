@@ -11,6 +11,7 @@ import Foundation
 enum CachingError: LocalizedError, Error {
 	case notFound
 	case writeError
+    case updateError
 
 	var localizedDescription: String {
 		switch self {
@@ -18,6 +19,8 @@ enum CachingError: LocalizedError, Error {
 			return "Not found".localized
 		case .writeError:
 			return "Can not write to cache".localized
+        case .updateError:
+            return "Cannot update object in cache".localized
 		}
 	}
 }
@@ -28,9 +31,13 @@ protocol Caching {
 	/// Delete all data from cache
 	func clear() throws
 
-	/// Write new object to cache, if object with same id is present, then re-write it
+	/// Write new object to cache
 	/// - Parameter object: post entity
 	func write(object: PostEntity) throws
+
+    /// Update object in cache
+    /// - Parameter object: post entity
+    func update(object: PostEntity) throws
 
 	/// Fetch all posts with given sorting
 	/// - Parameter sortDescriptor: sort descriptor

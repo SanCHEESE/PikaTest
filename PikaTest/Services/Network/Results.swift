@@ -37,6 +37,6 @@ struct PostResult: Storable {
 		guard let post = self.post else {
 			return
 		}
-		try cache.write(object: post)
+		try cache.update(object: post)
 	}
 }

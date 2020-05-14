@@ -23,5 +23,5 @@ protocol DecoderProtocol {
 
 /// Extend JSON Decoder for general decoder protocol
 extension JSONDecoder: DecoderProtocol {
-
+    
 }

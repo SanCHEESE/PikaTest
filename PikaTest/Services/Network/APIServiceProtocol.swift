@@ -49,7 +49,7 @@ protocol APIServiceProtocol: AnyObject {
 	var session: URLSession { get }
 	var decoder: DecoderProtocol { get }
 
-	func fetch<T: Storable>(with request: URLRequest, decode: @escaping (Decodable) -> T?, completion: @escaping (Result<T, APIError>) -> Void)
+	func fetch<T: Storable>(with request: URLRequest, handleGenericModel: @escaping (Decodable) -> T?, completion: @escaping (Result<T, APIError>) -> Void)
 
 	func getFeed(from endpoint: FeedEndpoint, completion: @escaping (Result<FeedResult, APIError>) -> Void)
 	func getPost(from endpoint: PostEndpoint, completion: @escaping (Result<PostResult, APIError>) -> Void)
@@ -83,11 +83,11 @@ extension APIServiceProtocol {
 		return task
 	}
 
-	func fetch<T: Storable>(with request: URLRequest, decode: @escaping (Decodable) -> T?, completion: @escaping (Result<T, APIError>) -> Void) {
+	func fetch<T: Storable>(with request: URLRequest, handleGenericModel: @escaping (Decodable) -> T?, completion: @escaping (Result<T, APIError>) -> Void) {
 
-		let task = decodingTask(with: request, decodingType: T.self) { (json , error) in
+		let task = decodingTask(with: request, decodingType: T.self) { (decodedModel, error) in
 			DispatchQueue.global().async {
-				guard let json = json else {
+				guard let decodedModel = decodedModel else {
 					if let error = error {
 						completion(.failure(error))
 					} else {
@@ -95,7 +95,7 @@ extension APIServiceProtocol {
 					}
 					return
 				}
-				if let value = decode(json) {
+				if let value = handleGenericModel(decodedModel) {
 					completion(.success(value))
 				} else {
 					completion(.failure(.jsonParsingFailure))

@@ -13,10 +13,12 @@ final class APIService: APIServiceProtocol {
 
 	let session: URLSession
 	let decoder: DecoderProtocol
+    let cache: Caching
 
-	init(configuration: URLSessionConfiguration = .default, decoder: DecoderProtocol = JSONDecoder()) {
+    init(configuration: URLSessionConfiguration = .default, decoder: DecoderProtocol = JSONDecoder(), cache: Caching = CoreDataService()) {
 		self.session = URLSession(configuration: configuration)
 		self.decoder = decoder
+        self.cache = cache
 	}
 
 	func getFeed(from endpoint: FeedEndpoint, completion: @escaping (Result<FeedResult, APIError>) -> Void) {
@@ -25,9 +27,15 @@ final class APIService: APIServiceProtocol {
 			return
 		}
 
-		fetch(with: request, decode: { (json: Decodable) -> FeedResult? in
-			guard let feedResult = json as? FeedResult else { return nil }
-			return feedResult
+		fetch(with: request, handleGenericModel: { (genericModel: Decodable) -> FeedResult? in
+			guard let feedResult = genericModel as? FeedResult else { return nil }
+            do {
+                try feedResult.cache(with: self.cache)
+            } catch let error {
+                debugPrint("Caching FeedResult failed! Error: \(error.localizedDescription)")
+                return nil
+            }
+            return feedResult
 		}, completion: completion)
 	}
 
@@ -37,8 +45,14 @@ final class APIService: APIServiceProtocol {
 			return
 		}
 
-		fetch(with: request, decode: { (json: Decodable) -> PostResult? in
-			guard let postResult = json as? PostResult else { return nil }
+		fetch(with: request, handleGenericModel: { (genericModel: Decodable) -> PostResult? in
+			guard let postResult = genericModel as? PostResult else { return nil }
+            do {
+                try postResult.cache(with: self.cache)
+            } catch let error {
+                debugPrint("Caching PostResult failed! Error: \(error.localizedDescription)")
+                return nil
+            }
 			return postResult
 		}, completion: completion)
 	}
