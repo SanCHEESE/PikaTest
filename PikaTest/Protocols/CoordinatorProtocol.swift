@@ -22,7 +22,7 @@ protocol CoordinatorProtocol: AnyObject {
 	
 	/// presents error alert
 	func presentErrorAlert(with error: Error)
-}.
+}
 
 extension CoordinatorProtocol {
 
